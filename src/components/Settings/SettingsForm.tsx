@@ -1,11 +1,13 @@
-import { useState, useEffect } from 'react';
-import { getSettings, saveSettings } from '../../services/db';
+import { useState, useEffect, useRef } from 'react';
+import { getSettings, saveSettings, exportMealsJSON, exportMealsCSV, importMealsJSON } from '../../services/db';
 import styles from './Settings.module.css';
 
 export function SettingsForm() {
   const [goal, setGoal] = useState('120');
   const [apiKey, setApiKey] = useState('');
   const [saved, setSaved] = useState(false);
+  const [importStatus, setImportStatus] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     getSettings().then((s) => {
@@ -22,6 +24,19 @@ export function SettingsForm() {
     });
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  }
+
+  async function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const count = await importMealsJSON(file);
+      setImportStatus(`${count} Mahlzeiten importiert`);
+    } catch {
+      setImportStatus('Fehler: Ungültige Datei');
+    }
+    setTimeout(() => setImportStatus(null), 3000);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
   return (
@@ -58,6 +73,32 @@ export function SettingsForm() {
       <button className={styles.saveBtn} type="submit">
         {saved ? 'Gespeichert!' : 'Speichern'}
       </button>
+
+      <div className={styles.section}>
+        <h3 className={styles.sectionTitle}>Daten Export</h3>
+        <p className={styles.hint}>Alle Mahlzeiten als Datei speichern (Fotos werden nicht exportiert).</p>
+        <div className={styles.exportRow}>
+          <button className={styles.exportBtn} type="button" onClick={exportMealsJSON}>
+            JSON exportieren
+          </button>
+          <button className={styles.exportBtn} type="button" onClick={exportMealsCSV}>
+            CSV exportieren
+          </button>
+        </div>
+      </div>
+
+      <div className={styles.section}>
+        <h3 className={styles.sectionTitle}>Daten Import</h3>
+        <p className={styles.hint}>JSON-Export-Datei einlesen. Bestehende Daten bleiben erhalten.</p>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json"
+          className={styles.fileInput}
+          onChange={handleImport}
+        />
+        {importStatus && <p className={styles.importStatus}>{importStatus}</p>}
+      </div>
     </form>
   );
 }
