@@ -3,11 +3,11 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import basicSsl from '@vitejs/plugin-basic-ssl'
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   base: '/ProteinTracker/',
   plugins: [
     react(),
-    ...(process.env.NODE_ENV === 'production' ? [] : [basicSsl()]),
+    ...(command === 'serve' ? [basicSsl()] : []),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icons/icon.svg'],
@@ -57,4 +57,4 @@ export default defineConfig({
       },
     }),
   ],
-})
+}))
