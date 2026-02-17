@@ -7,7 +7,7 @@ import { SettingsPage } from './pages/SettingsPage';
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/ProteinTracker/">
       <Routes>
         <Route element={<AppShell />}>
           <Route path="/" element={<DashboardPage />} />
