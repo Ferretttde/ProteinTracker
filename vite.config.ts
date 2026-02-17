@@ -7,7 +7,7 @@ export default defineConfig({
   base: '/ProteinTracker/',
   plugins: [
     react(),
-    basicSsl(),
+    ...(process.env.NODE_ENV === 'production' ? [] : [basicSsl()]),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icons/icon.svg'],
