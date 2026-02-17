@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#4f46e5"/>
+  <g transform="translate(256,256)">
+    <!-- Protein/dumbbell icon -->
+    <rect x="-120" y="-16" width="240" height="32" rx="16" fill="white"/>
+    <rect x="-160" y="-48" width="40" height="96" rx="8" fill="white"/>
+    <rect x="120" y="-48" width="40" height="96" rx="8" fill="white"/>
+    <rect x="-180" y="-32" width="20" height="64" rx="6" fill="white" opacity="0.8"/>
+    <rect x="160" y="-32" width="20" height="64" rx="6" fill="white" opacity="0.8"/>
+    <!-- "P" text -->
+    <text x="0" y="120" text-anchor="middle" font-family="Arial, sans-serif" font-size="80" font-weight="bold" fill="white">P</text>
+  </g>
+</svg>

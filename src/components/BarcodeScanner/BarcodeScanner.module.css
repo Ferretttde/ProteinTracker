@@ -1,0 +1,135 @@
+.container {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--color-text);
+}
+
+.reader {
+  width: 100%;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.primaryBtn {
+  width: 100%;
+  padding: 14px;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+.secondaryBtn {
+  width: 100%;
+  padding: 12px;
+  background: #f0f0f0;
+  color: #555;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+.error {
+  background: #fff3f3;
+  color: #e74c3c;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.productCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.productImage {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 8px;
+  align-self: center;
+  background: #f8f8f8;
+}
+
+.productName {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.productBrand {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #888;
+}
+
+.nutritionRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #666;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.amountField {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0;
+}
+
+.amountLabel {
+  font-size: 0.9rem;
+  color: #555;
+  white-space: nowrap;
+}
+
+.amountInput {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.amountInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.calculated {
+  text-align: center;
+  font-size: 1.1rem;
+  padding: 12px;
+  background: #f0f8ff;
+  border-radius: 10px;
+  color: var(--color-primary);
+  margin-bottom: 8px;
+}

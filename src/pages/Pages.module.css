@@ -1,0 +1,58 @@
+.mealTypeSelector {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.mealTypeBtn {
+  flex: 1;
+  padding: 8px 4px;
+  border: 1.5px solid #ddd;
+  border-radius: 10px;
+  background: white;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mealTypeBtnActive {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+  font-weight: 600;
+}
+
+.tabBar {
+  display: flex;
+  gap: 4px;
+  background: #f0f0f0;
+  padding: 4px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.tab {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tabActive {
+  background: white;
+  color: var(--color-primary);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tabContent {
+  min-height: 200px;
+}
