@@ -40,3 +40,28 @@
   font-size: 0.75rem;
   color: #888;
 }
+
+.legendRow {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  color: #555;
+}
+
+.legendItem::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background-color: var(--dot-color);
+  flex-shrink: 0;
+}
