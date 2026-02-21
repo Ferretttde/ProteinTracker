@@ -44,7 +44,7 @@ function formatDateLabel(date: Date): string {
 
 export function AddMealPage() {
   const [searchParams] = useSearchParams();
-  const [tab, setTab] = useState<Tab>('manual');
+  const [tab, setTab] = useState<Tab>('text_ai');
   const [mealType, setMealType] = useState<MealType>(getDefaultMealType);
 
   const targetDate = parseDateParam(searchParams.get('date'));
