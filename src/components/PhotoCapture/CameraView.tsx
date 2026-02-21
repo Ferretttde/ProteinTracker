@@ -11,6 +11,32 @@ interface Props {
   targetDate?: Date | null;
 }
 
+const MAX_SIZE = 1024;
+const JPEG_QUALITY = 0.80;
+
+function resizeBlob(blob: Blob): Promise<Blob> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(blob);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const scale = Math.min(1, MAX_SIZE / Math.max(img.width, img.height));
+      const w = Math.round(img.width * scale);
+      const h = Math.round(img.height * scale);
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      canvas.getContext('2d')!.drawImage(img, 0, 0, w, h);
+      canvas.toBlob((resized) => resolve(resized ?? blob), 'image/jpeg', JPEG_QUALITY);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(blob);
+    };
+    img.src = url;
+  });
+}
+
 function toEditableItems(results: import('../../types').AnalysisResult[]): EditableItem[] {
   return results.map((r) => ({
     original: r,
@@ -48,11 +74,12 @@ export function CameraView({ mealType, targetDate }: Props) {
     }
   }
 
-  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (file) {
-      setPhoto(file);
-      setPhotoUrl(URL.createObjectURL(file));
+      const resized = await resizeBlob(file);
+      setPhoto(resized);
+      setPhotoUrl(URL.createObjectURL(resized));
       stop();
     }
   }

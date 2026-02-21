@@ -67,15 +67,22 @@ export function useCamera() {
     const video = videoRef.current;
     if (!video) return null;
 
+    const MAX_SIZE = 1024;
+    const srcW = video.videoWidth;
+    const srcH = video.videoHeight;
+    const scale = Math.min(1, MAX_SIZE / Math.max(srcW, srcH));
+    const w = Math.round(srcW * scale);
+    const h = Math.round(srcH * scale);
+
     const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    canvas.width = w;
+    canvas.height = h;
     const ctx = canvas.getContext('2d');
     if (!ctx) return null;
 
-    ctx.drawImage(video, 0, 0);
+    ctx.drawImage(video, 0, 0, w, h);
 
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.80);
     const byteString = atob(dataUrl.split(',')[1]);
     const ab = new ArrayBuffer(byteString.length);
     const ia = new Uint8Array(ab);
