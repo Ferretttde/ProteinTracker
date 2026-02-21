@@ -56,7 +56,7 @@ function buildTimestamp(targetDate?: Date | null): Date {
 }
 
 export function CameraView({ mealType, targetDate }: Props) {
-  const { videoRef, isActive, error: cameraError, start, stop, capture } = useCamera();
+  const { videoRef, isActive, error: cameraError, start, stop, capture, zoom, zoomInfo, setZoom } = useCamera();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [photo, setPhoto] = useState<Blob | null>(null);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
@@ -259,6 +259,21 @@ export function CameraView({ mealType, targetDate }: Props) {
             playsInline
             className={styles.video}
           />
+          {zoomInfo && (
+            <div className={styles.zoomControl}>
+              <span className={styles.zoomIcon}>&#128269;</span>
+              <input
+                type="range"
+                className={styles.zoomSlider}
+                min={zoomInfo.min}
+                max={zoomInfo.max}
+                step={zoomInfo.step}
+                value={zoom}
+                onChange={(e) => setZoom(parseFloat(e.target.value))}
+              />
+              <span className={styles.zoomValue}>{zoom.toFixed(1)}×</span>
+            </div>
+          )}
           <button className={styles.captureBtn} onClick={handleCapture}>
             Foto aufnehmen
           </button>

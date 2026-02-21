@@ -4,7 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { lookupBarcode, type ProductInfo } from '../../services/barcode-service';
 import { addMeal } from '../../hooks/useMeals';
 import type { MealType } from '../../types';
+import type { ZoomInfo } from '../../hooks/useCamera';
 import styles from './BarcodeScanner.module.css';
+
+const ZOOM_STORAGE_KEY = 'pt_camera_zoom';
 
 interface Props {
   mealType: MealType;
@@ -21,12 +24,15 @@ function buildTimestamp(targetDate?: Date | null): Date {
 
 export function ScannerView({ mealType, targetDate }: Props) {
   const scannerRef = useRef<Html5Qrcode | null>(null);
+  const scannerTrackRef = useRef<MediaStreamTrack | null>(null);
   const [scanning, setScanning] = useState(false);
   const [product, setProduct] = useState<ProductInfo | null>(null);
   const [barcode, setBarcode] = useState('');
   const [amount, setAmount] = useState('100');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [zoomInfo, setZoomInfo] = useState<ZoomInfo | null>(null);
+  const [zoom, setZoomState] = useState<number>(1);
   const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -38,9 +44,23 @@ export function ScannerView({ mealType, targetDate }: Props) {
     };
   }, []);
 
+  async function applyZoom(track: MediaStreamTrack, value: number) {
+    try {
+      await track.applyConstraints({
+        advanced: [{ zoom: value } as Record<string, unknown>],
+      } as MediaTrackConstraints);
+      setZoomState(value);
+      localStorage.setItem(ZOOM_STORAGE_KEY, String(value));
+    } catch {
+      // zoom not supported
+    }
+  }
+
   async function startScanning() {
     setError(null);
     setProduct(null);
+    setZoomInfo(null);
+    scannerTrackRef.current = null;
 
     const scanner = new Html5Qrcode('barcode-reader');
     scannerRef.current = scanner;
@@ -53,25 +73,41 @@ export function ScannerView({ mealType, targetDate }: Props) {
         async (decodedText) => {
           await scanner.stop();
           setScanning(false);
+          setZoomInfo(null);
+          scannerTrackRef.current = null;
           await handleBarcode(decodedText);
         },
         () => {} // ignore errors during scanning
       );
 
-      // Apply 2x zoom to avoid wide-angle distortion
+      // Read zoom capabilities from the video track html5-qrcode created
       try {
         const video = document.querySelector('#barcode-reader video') as HTMLVideoElement | null;
         const track = video?.srcObject instanceof MediaStream
           ? video.srcObject.getVideoTracks()[0]
           : null;
         if (track) {
-          const capabilities = track.getCapabilities() as MediaTrackCapabilities & { zoom?: { min: number; max: number } };
-          if (capabilities.zoom && capabilities.zoom.max >= 2.0) {
-            await track.applyConstraints({ advanced: [{ zoom: 2.0 } as any] });
+          scannerTrackRef.current = track;
+          const capabilities = track.getCapabilities() as Record<string, unknown>;
+          const zoomCap = capabilities.zoom as { min: number; max: number; step?: number } | undefined;
+          if (zoomCap) {
+            const info: ZoomInfo = {
+              min: zoomCap.min,
+              max: zoomCap.max,
+              step: zoomCap.step ?? 0.1,
+            };
+            setZoomInfo(info);
+
+            const saved = parseFloat(localStorage.getItem(ZOOM_STORAGE_KEY) ?? '');
+            const initial = !isNaN(saved) && saved >= info.min && saved <= info.max
+              ? saved
+              : info.min;
+
+            await applyZoom(track, initial);
           }
         }
       } catch {
-        // Zoom not supported on this device — ignore
+        // zoom not supported on this device — ignore
       }
     } catch {
       setScanning(false);
@@ -179,6 +215,24 @@ export function ScannerView({ mealType, targetDate }: Props) {
       {error && <div className={styles.error}>{error}</div>}
       {loading && <div className={styles.loading}>Suche Produkt...</div>}
       <div id="barcode-reader" className={styles.reader} />
+      {zoomInfo && scanning && (
+        <div className={styles.zoomControl}>
+          <span className={styles.zoomIcon}>&#128269;</span>
+          <input
+            type="range"
+            className={styles.zoomSlider}
+            min={zoomInfo.min}
+            max={zoomInfo.max}
+            step={zoomInfo.step}
+            value={zoom}
+            onChange={(e) => {
+              const val = parseFloat(e.target.value);
+              if (scannerTrackRef.current) applyZoom(scannerTrackRef.current, val);
+            }}
+          />
+          <span className={styles.zoomValue}>{zoom.toFixed(1)}×</span>
+        </div>
+      )}
       {!scanning && !loading && (
         <button className={styles.primaryBtn} onClick={startScanning}>
           Scanner starten
@@ -192,6 +246,8 @@ export function ScannerView({ mealType, targetDate }: Props) {
               await scannerRef.current.stop();
             }
             setScanning(false);
+            setZoomInfo(null);
+            scannerTrackRef.current = null;
           }}
         >
           Abbrechen
