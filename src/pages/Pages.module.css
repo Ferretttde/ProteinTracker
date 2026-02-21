@@ -1,3 +1,66 @@
+.dateNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  background: #f4f4f4;
+  border-radius: 12px;
+  padding: 4px 4px;
+}
+
+.dateNavBtn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--color-primary);
+  cursor: pointer;
+  padding: 0 10px;
+  border-radius: 8px;
+  transition: opacity 0.15s;
+}
+
+.dateNavBtn:disabled {
+  color: #ccc;
+  cursor: default;
+}
+
+.dateNavLabel {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.addForDayBtn {
+  display: block;
+  width: 100%;
+  margin-top: 16px;
+  padding: 14px;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.addForDayBtn:active {
+  opacity: 0.85;
+}
+
+.pastDayBanner {
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #795548;
+}
+
 .mealTypeSelector {
   display: flex;
   gap: 6px;

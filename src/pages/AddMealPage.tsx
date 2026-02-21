@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { QuickAddForm } from '../components/ManualEntry/QuickAddForm';
 import { CameraView } from '../components/PhotoCapture/CameraView';
 import { TextAnalysisView } from '../components/TextAnalysis/TextAnalysisView';
@@ -25,12 +26,36 @@ function getDefaultMealType(): MealType {
   return 'snack';
 }
 
+function parseDateParam(param: string | null): Date | null {
+  if (!param) return null;
+  const parts = param.split('-').map(Number);
+  if (parts.length !== 3) return null;
+  const d = new Date(parts[0], parts[1] - 1, parts[2]);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function formatDateLabel(date: Date): string {
+  return new Intl.DateTimeFormat('de-DE', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  }).format(date);
+}
+
 export function AddMealPage() {
+  const [searchParams] = useSearchParams();
   const [tab, setTab] = useState<Tab>('manual');
   const [mealType, setMealType] = useState<MealType>(getDefaultMealType);
 
+  const targetDate = parseDateParam(searchParams.get('date'));
+
   return (
     <div>
+      {targetDate && (
+        <div className={styles.pastDayBanner}>
+          Eintrag für {formatDateLabel(targetDate)}
+        </div>
+      )}
       <div className={styles.mealTypeSelector}>
         {mealTypes.map((mt) => (
           <button
@@ -69,10 +94,10 @@ export function AddMealPage() {
         </button>
       </div>
       <div className={styles.tabContent}>
-        {tab === 'manual' && <QuickAddForm mealType={mealType} />}
-        {tab === 'photo' && <CameraView mealType={mealType} />}
-        {tab === 'text_ai' && <TextAnalysisView mealType={mealType} />}
-        {tab === 'barcode' && <ScannerView mealType={mealType} />}
+        {tab === 'manual' && <QuickAddForm mealType={mealType} targetDate={targetDate} />}
+        {tab === 'photo' && <CameraView mealType={mealType} targetDate={targetDate} />}
+        {tab === 'text_ai' && <TextAnalysisView mealType={mealType} targetDate={targetDate} />}
+        {tab === 'barcode' && <ScannerView mealType={mealType} targetDate={targetDate} />}
       </div>
     </div>
   );

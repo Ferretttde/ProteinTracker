@@ -8,9 +8,18 @@ import styles from './BarcodeScanner.module.css';
 
 interface Props {
   mealType: MealType;
+  targetDate?: Date | null;
 }
 
-export function ScannerView({ mealType }: Props) {
+function buildTimestamp(targetDate?: Date | null): Date {
+  if (!targetDate) return new Date();
+  const now = new Date();
+  const d = new Date(targetDate);
+  d.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
+  return d;
+}
+
+export function ScannerView({ mealType, targetDate }: Props) {
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const [scanning, setScanning] = useState(false);
   const [product, setProduct] = useState<ProductInfo | null>(null);
@@ -93,7 +102,7 @@ export function ScannerView({ mealType }: Props) {
     const factor = grams / 100;
 
     await addMeal({
-      timestamp: new Date(),
+      timestamp: buildTimestamp(targetDate),
       description: product.brand
         ? `${product.name} (${product.brand})`
         : product.name,

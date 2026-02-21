@@ -6,9 +6,18 @@ import styles from './ManualEntry.module.css';
 
 interface Props {
   mealType: MealType;
+  targetDate?: Date | null;
 }
 
-export function QuickAddForm({ mealType }: Props) {
+function buildTimestamp(targetDate?: Date | null): Date {
+  if (!targetDate) return new Date();
+  const now = new Date();
+  const d = new Date(targetDate);
+  d.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
+  return d;
+}
+
+export function QuickAddForm({ mealType, targetDate }: Props) {
   const [description, setDescription] = useState('');
   const [protein, setProtein] = useState('');
   const [calories, setCalories] = useState('');
@@ -20,7 +29,7 @@ export function QuickAddForm({ mealType }: Props) {
     if (!description.trim() || isNaN(proteinVal) || proteinVal <= 0) return;
 
     await addMeal({
-      timestamp: new Date(),
+      timestamp: buildTimestamp(targetDate),
       description: description.trim(),
       protein_g: proteinVal,
       calories: calories ? parseFloat(calories) || undefined : undefined,

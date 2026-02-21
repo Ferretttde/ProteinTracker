@@ -7,6 +7,7 @@ import styles from './TextAnalysis.module.css';
 
 interface Props {
   mealType: MealType;
+  targetDate?: Date | null;
 }
 
 function toEditableItems(results: import('../../types').AnalysisResult[]): EditableItem[] {
@@ -19,7 +20,15 @@ function toEditableItems(results: import('../../types').AnalysisResult[]): Edita
   }));
 }
 
-export function TextAnalysisView({ mealType }: Props) {
+function buildTimestamp(targetDate?: Date | null): Date {
+  if (!targetDate) return new Date();
+  const now = new Date();
+  const d = new Date(targetDate);
+  d.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
+  return d;
+}
+
+export function TextAnalysisView({ mealType, targetDate }: Props) {
   const [input, setInput] = useState('');
   const [analyzing, setAnalyzing] = useState(false);
   const [items, setItems] = useState<EditableItem[]>([]);
@@ -66,7 +75,7 @@ export function TextAnalysisView({ mealType }: Props) {
 
   async function handleSave() {
     if (items.length === 0) return;
-    const timestamp = new Date();
+    const timestamp = buildTimestamp(targetDate);
     for (const item of items) {
       const proteinVal = parseFloat(item.protein) || item.original.protein_g;
       const caloriesVal = item.calories ? parseFloat(item.calories) : item.original.calories;

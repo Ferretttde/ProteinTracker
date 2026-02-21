@@ -8,6 +8,7 @@ import styles from './PhotoCapture.module.css';
 
 interface Props {
   mealType: MealType;
+  targetDate?: Date | null;
 }
 
 function toEditableItems(results: import('../../types').AnalysisResult[]): EditableItem[] {
@@ -20,7 +21,15 @@ function toEditableItems(results: import('../../types').AnalysisResult[]): Edita
   }));
 }
 
-export function CameraView({ mealType }: Props) {
+function buildTimestamp(targetDate?: Date | null): Date {
+  if (!targetDate) return new Date();
+  const now = new Date();
+  const d = new Date(targetDate);
+  d.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
+  return d;
+}
+
+export function CameraView({ mealType, targetDate }: Props) {
   const { videoRef, isActive, error: cameraError, start, stop, capture } = useCamera();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [photo, setPhoto] = useState<Blob | null>(null);
@@ -87,7 +96,7 @@ export function CameraView({ mealType }: Props) {
 
   async function handleSave() {
     if (items.length === 0) return;
-    const timestamp = new Date();
+    const timestamp = buildTimestamp(targetDate);
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
       const proteinVal = parseFloat(item.protein) || item.original.protein_g;
