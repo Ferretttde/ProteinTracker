@@ -6,10 +6,16 @@ export function useCamera() {
   const [isActive, setIsActive] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Attach stream to video element whenever either changes
+  // Attach stream to video element and explicitly call play() —
+  // autoPlay attribute alone is not reliable on some Android browsers.
   useEffect(() => {
-    if (videoRef.current && streamRef.current) {
-      videoRef.current.srcObject = streamRef.current;
+    const video = videoRef.current;
+    const stream = streamRef.current;
+    if (video && stream) {
+      video.srcObject = stream;
+      video.play().catch(() => {
+        // play() can throw if interrupted (e.g. user navigates away)
+      });
     }
   }, [isActive]);
 
@@ -37,12 +43,8 @@ export function useCamera() {
         }
       }
       streamRef.current = stream;
-      // If the video element already exists, attach immediately
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-      // This triggers re-render, which shows the <video> element;
-      // the useEffect above will then attach the stream if needed
+      // setIsActive triggers re-render → <video> appears in DOM →
+      // useEffect runs and attaches stream + calls play()
       setIsActive(true);
     } catch (err) {
       setError('Kamerazugriff nicht möglich. Bitte Berechtigung erteilen.');
